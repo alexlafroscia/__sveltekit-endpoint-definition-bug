@@ -1,38 +1,37 @@
-# create-svelte
+# Endpoint Naming Bug Demonstation
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte);
+This repository demonstrates what I _think_ is a bug in SvelteKit around defining endpoints.
 
-## Creating a project
+I am not _exactly_ sure what the bug is, but the result in my app is that an endpoint named `index.json.js` nested anywhere other than the root of the URL structure results in a `404` when it should not.
 
-If you're seeing this, you've probably already done this step. Congrats!
+Four endpoints have been defined:
 
-```bash
-# create a new project in the current directory
-npm init svelte@next
+1. `/index.json`
+2. `/test.json`
+3. `/test/index.json`
+4. `/test/test.json`
 
-# create a new project in my-app
-npm init svelte@next my-app
+1, 2 and 4 all work as-expected; they return the following payload
+
+```json
+{ "hello": "world" }
 ```
 
-> Note: the `@next` is temporary
+![Working endpoints tested](./screenshots/working-endpoints.png)
 
-## Developing
+3, however, results in a `404` error being triggered by SvelteKit.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+![Not-found endpoint tested](./screenshots/not-found-endpoint.png)
 
-```bash
-npm run dev
+I've read over the documentation again and again and can't find anything that would suggest that what is happening in this repository matches the expected or desired behavior.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+## Local Reproduction
 
-## Building
+1. Clone repository
+2. `npm install`
+3. `npm run dev`
+4. Use `curl` to hit one of the endpoints, like
 
-Before creating a production version of your app, install an [adapter](https://kit.svelte.dev/docs#adapters) for your target environment. Then:
-
-```bash
-npm run build
-```
-
-> You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
+   ```sh
+   curl localhost:3000/test/index.json
+   ```
